@@ -1,0 +1,7 @@
+README.md
+setup.py
+src/movie_project.egg-info/PKG-INFO
+src/movie_project.egg-info/SOURCES.txt
+src/movie_project.egg-info/dependency_links.txt
+src/movie_project.egg-info/requires.txt
+src/movie_project.egg-info/top_level.txt
