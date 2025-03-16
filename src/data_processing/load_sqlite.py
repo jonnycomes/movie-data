@@ -66,7 +66,7 @@ def fetch_one_hot_genres(db_path="../data/movies.db", vote_count_min=0):
 
 
 
-def fetch_scores(db_path="../data/movies.db", sql_file_path="sql/generate_scores.sql", lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order):
+def fetch_scores(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order, db_path="../data/movies.db", sql_file_path="sql/generate_scores.sql"):
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
     
