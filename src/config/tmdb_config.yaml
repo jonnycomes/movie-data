@@ -1,4 +1,0 @@
-api_key: REDACTED
-base_url: "https://api.themoviedb.org/3"
-request_limit: 40  # Max API calls per minute to avoid rate limits
-request_page_limit: 500 
