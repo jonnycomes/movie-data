@@ -63,3 +63,25 @@ def fetch_one_hot_genres(db_path="../data/movies.db", vote_count_min=0):
 
         # Execute the query with parameterized genre values
         return pd.read_sql_query(query, conn, params=genres)
+
+
+
+def fetch_scores(db_path="../data/movies.db", sql_file_path="sql/generate_scores.sql", lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order):
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+    
+        # Read the SQL query from the file
+        with open(sql_file_path, 'r') as f:
+            query = f.read()
+        
+        # Execute the query with the passed parameters
+        cursor.execute(query, (lambda_director, lambda_director, 
+                               lambda_writers, lambda_writers, 
+                               lambda_cast_time, lambda_cast_time,
+                               lambda_cast_order, lambda_cast_order,
+                               lambda_cast_time, lambda_cast_time,
+                               lambda_cast_order, lambda_cast_order))
+        
+        # Fetch and return the results into a pandas DataFrame
+        return pd.DataFrame(cursor.fetchall(), columns=["movie_id", "director_score", "writer_score", "cast_score", "production_company_score"])
+
