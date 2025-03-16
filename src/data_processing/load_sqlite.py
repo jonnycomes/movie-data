@@ -1,7 +1,9 @@
 import sqlite3
 import pandas as pd
+from config.settings import DB_PATH, DATA_PROCESSING_SQL_PATH as SQL_PATH
 
-def fetch_one_hot_genres(db_path="../data/movies.db", vote_count_min=0):
+
+def fetch_one_hot_genres(vote_count_min=0):
     """
     Fetches a one-hot encoded DataFrame for movie genres from an SQLite database.
 
@@ -10,8 +12,8 @@ def fetch_one_hot_genres(db_path="../data/movies.db", vote_count_min=0):
 
     Parameters:
     -----------
-    db_path : str, optional
-        The file path to the SQLite database. Defaults to "movies.db".
+    vote_count_min : numeric, optional
+        The minimum vote count a movie must have to be included in the results. Default is 0.
 
     Returns:
     --------
@@ -30,7 +32,7 @@ def fetch_one_hot_genres(db_path="../data/movies.db", vote_count_min=0):
     - Only genres listed in the `genre` table are considered.
     - If a movie has no listed genres, all genre columns will be 0.
     """
-    with sqlite3.connect(db_path) as conn:
+    with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
 
         # Get all unique genres from the genre table
@@ -66,22 +68,25 @@ def fetch_one_hot_genres(db_path="../data/movies.db", vote_count_min=0):
 
 
 
-def fetch_scores(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order, db_path="../data/movies.db", sql_file_path="sql/generate_scores.sql"):
-    with sqlite3.connect(db_path) as conn:
+def fetch_scores(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order):
+    with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
     
-        # Read the SQL query from the file
-        with open(sql_file_path, 'r') as f:
+        # Read the SQL query from the file generate_scores.sql
+        with open(SQL_PATH / 'generate_scores.sql', 'r') as f:
             query = f.read()
         
         # Execute the query with the passed parameters
         cursor.execute(query, (lambda_director, lambda_director, 
                                lambda_writers, lambda_writers, 
-                               lambda_cast_time, lambda_cast_time,
-                               lambda_cast_order, lambda_cast_order,
-                               lambda_cast_time, lambda_cast_time,
-                               lambda_cast_order, lambda_cast_order))
+                               lambda_cast_time, lambda_cast_order,
+                               lambda_cast_time, lambda_cast_order,
+                               lambda_cast_time, lambda_cast_order
+                               ))
         
         # Fetch and return the results into a pandas DataFrame
         return pd.DataFrame(cursor.fetchall(), columns=["movie_id", "director_score", "writer_score", "cast_score", "production_company_score"])
 
+
+if __name__ == '__main__':
+    fetch_scores(1,1,1,1)
