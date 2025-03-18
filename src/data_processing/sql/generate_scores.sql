@@ -21,11 +21,7 @@ PastDirectorMovies AS (
 DirectorScores AS (
     SELECT 
         movie_id, 
-        COALESCE(
-            SUM(past_vote_average * EXP(-? * days_difference)) / 
-            SUM(EXP(-? * days_difference)), 
-            (SELECT overall_avg_vote FROM OverallAverage)
-        ) AS director_score
+        SUM(past_vote_average * EXP(-? * days_difference)) / SUM(EXP(-? * days_difference)) AS director_score
     FROM PastDirectorMovies
     GROUP BY movie_id
 ),
@@ -46,11 +42,7 @@ PastWriterMovies AS (
 WriterScores AS (
     SELECT 
         movie_id, 
-        COALESCE(
-            SUM(past_vote_average * EXP(-? * days_difference)) / 
-            SUM(EXP(-? * days_difference)), 
-            (SELECT overall_avg_vote FROM OverallAverage)
-        ) AS writer_score
+        SUM(past_vote_average * EXP(-? * days_difference)) / SUM(EXP(-? * days_difference)) AS writer_score
     FROM PastWriterMovies
     GROUP BY movie_id
 ),
@@ -95,20 +87,19 @@ PastProductionMovies AS (
 ProductionCompanyScores AS (
     SELECT 
         movie_id,
-        COALESCE(AVG(past_vote_average), (SELECT overall_avg_vote FROM OverallAverage)) 
-        AS production_company_score
+        AVG(past_vote_average) AS production_company_score
     FROM PastProductionMovies
     GROUP BY movie_id
 )
 SELECT 
     m.movie_id,
-    ds.director_score,
-    ws.writer_score,
-    cs.cast_score,
-    pcs.production_company_score
-FROM movie m
-LEFT JOIN DirectorScores ds ON m.movie_id = ds.movie_id
-LEFT JOIN WriterScores ws ON m.movie_id = ws.movie_id
-LEFT JOIN CastScores cs ON m.movie_id = cs.movie_id
-LEFT JOIN ProductionCompanyScores pcs ON m.movie_id = pcs.movie_id
+    COALESCE(ds.director_score, overall_avg_vote) AS director_score,
+    COALESCE(ws.writer_score, overall_avg_vote) AS writer_score,
+    COALESCE(cs.cast_score, overall_avg_vote) AS cast_score,
+    COALESCE(pcs.production_company_score, overall_avg_vote) AS production_company_score
+FROM OverallAverage, movie m
+     LEFT JOIN DirectorScores ds ON m.movie_id = ds.movie_id
+     LEFT JOIN WriterScores ws ON m.movie_id = ws.movie_id
+     LEFT JOIN CastScores cs ON m.movie_id = cs.movie_id
+     LEFT JOIN ProductionCompanyScores pcs ON m.movie_id = pcs.movie_id
 WHERE m.vote_count >= 30;
