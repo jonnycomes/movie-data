@@ -73,3 +73,12 @@ CREATE TABLE IF NOT EXISTS movie_production_company (
     FOREIGN KEY (movie_id) REFERENCES movie(movie_id),
     FOREIGN KEY (company_id) REFERENCES production_company(company_id)
 );
+
+CREATE TABLE IF NOT EXISTS user_movie_rating (
+    user_id INTEGER NOT NULL,
+    movie_id INTEGER NOT NULL,
+    rating REAL NOT NULL,
+    timestamp INTEGER,
+    PRIMARY KEY (user_id, movie_id, timestamp)
+    FOREIGN KEY (movie_id) REFERENCES movie(movie_id)   
+);
