@@ -6,13 +6,9 @@ import calendar
 
 from config.settings import DB_PATH, TMDB_API_KEY, TMDB_BASE_URL, TMDB_REQUEST_PAGE_LIMIT
 
-START_YEAR = 2025  
-END_YEAR = 2025
-MIN_VOTES = 0    
 
-session = requests.Session()
 
-def fetch_movies(start_date, end_date, page):
+def fetch_movies(start_date, end_date, page, min_votes):
     """
     Fetches a list of movies released between start_date and end_date from TMDb.
 
@@ -26,7 +22,7 @@ def fetch_movies(start_date, end_date, page):
     """
     params = {
         "api_key": TMDB_API_KEY,
-        "vote_count.gte": MIN_VOTES,
+        "vote_count.gte": min_votes,
         "primary_release_date.gte": start_date,
         "primary_release_date.lte": end_date,
         "page": page,
@@ -36,7 +32,7 @@ def fetch_movies(start_date, end_date, page):
     return response.json() if response.status_code == 200 else None
 
 
-def split_date_range(start_date, end_date):
+def split_date_range(start_date, end_date, min_votes):
     """
     Dynamically splits a date range into smaller chunks if needed to stay within TMDb's 500-page limit.
 
@@ -50,7 +46,7 @@ def split_date_range(start_date, end_date):
     date_ranges = [(start_date, end_date)]
     while date_ranges:
         start, end = date_ranges.pop(0)
-        data = fetch_movies(start, end, 1)  # Fetch page 1 to check total pages
+        data = fetch_movies(start, end, 1, min_votes)  # Fetch page 1 to check total pages
         total_pages = data.get("total_pages", 1) if data else 1
 
         if total_pages > TMDB_REQUEST_PAGE_LIMIT:
@@ -87,25 +83,26 @@ def fetch_movie_details(movie_id):
 
 
 
-def process_movies_parallel(start_date, end_date):
+def process_movies_parallel(start_date, end_date, min_votes):
     """
     Fetches movie data within a given date range and retrieves detailed movie information in parallel.
 
     Args:
         start_date (str): The start date in "YYYY-MM-DD" format.
         end_date (str): The end date in "YYYY-MM-DD" format.
+        min_votes (int): Only movies with at least min_votes votes will be processed.
 
     Returns:
         list: A list of tuples (movie_summary, movie_details).
     """
     movies_to_fetch = []
 
-    for sub_start, sub_end in split_date_range(start_date, end_date):
+    for sub_start, sub_end in split_date_range(start_date, end_date, min_votes):
         page = 1
         total_pages = None
 
         while total_pages is None or page <= total_pages:
-            data = fetch_movies(sub_start, sub_end, page)
+            data = fetch_movies(sub_start, sub_end, page, min_votes)
             if not data:
                 break
 
@@ -129,7 +126,7 @@ def process_movies_parallel(start_date, end_date):
     return movie_details_list
 
 
-def save_movies():
+def save_movies_parallel(start_year, end_year, min_votes):
     """
     Orchestrates fetching and storing movie data in parallel.
 
@@ -138,10 +135,10 @@ def save_movies():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    for year in range(START_YEAR, END_YEAR + 1):
+    for year in range(start_year, end_year + 1):
         with ThreadPoolExecutor(max_workers=5) as executor:  # Parallelize across months
             future_to_month = {
-                executor.submit(process_movies_parallel, f"{year}-{month:02d}-01", f"{year}-{month:02d}-{calendar.monthrange(year, month)[1]}")
+                executor.submit(process_movies_parallel, f"{year}-{month:02d}-01", f"{year}-{month:02d}-{calendar.monthrange(year, month)[1]}", min_votes)
                 for month in range(1, 13)
             }
 
@@ -199,11 +196,18 @@ def save_movies():
                 cursor.executemany("INSERT OR IGNORE INTO production_company (company_id, name) VALUES (?, ?)", list(company_rows))
                 cursor.executemany("INSERT OR IGNORE INTO movie_production_company (movie_id, company_id) VALUES (?, ?)", movie_production_rows)
 
-                conn.commit()  # Commit after each batch
+                conn.commit() 
 
     conn.close()
     print("Movie data insertion complete.")
 
 if __name__ == "__main__":
-    save_movies()
+
+    start_year = 2025  
+    end_year = 2025
+    min_votes = 0    
+
+
+    session = requests.Session()
+    save_movies_parallel(start_year, end_year, min_vote, min_votes)
     
