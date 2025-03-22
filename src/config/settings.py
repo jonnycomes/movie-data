@@ -3,6 +3,7 @@ from pathlib import Path
 # Define paths
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 DB_PATH = PROJECT_ROOT / "data" / "movies.db"
+RAW_DATA_PATH = PROJECT_ROOT / "data" / "raw"
 DATA_PROCESSING_SQL_PATH = PROJECT_ROOT / "src" / "data_processing" / "sql"
 
 # TMDB API settings

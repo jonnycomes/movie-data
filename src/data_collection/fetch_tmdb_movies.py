@@ -1,7 +1,7 @@
 import sqlite3
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timedelta
+from datetime import datetime
 import calendar
 
 from config.settings import DB_PATH, TMDB_API_KEY, TMDB_BASE_URL, TMDB_REQUEST_PAGE_LIMIT
@@ -16,6 +16,7 @@ def fetch_movies(start_date, end_date, page, min_votes):
         start_date (str): The start date in "YYYY-MM-DD" format.
         end_date (str): The end date in "YYYY-MM-DD" format.
         page (int): The page number to fetch.
+        min_votes (int): Only movies with at least min_votes votes will be fetched.
 
     Returns:
         dict: JSON response containing movie data, or None if the request fails.
@@ -39,6 +40,7 @@ def split_date_range(start_date, end_date, min_votes):
     Args:
         start_date (str): The starting date in "YYYY-MM-DD" format.
         end_date (str): The ending date in "YYYY-MM-DD" format.
+        min_votes (int): Only movies with at least min_votes votes will be checked.
 
     Returns:
         list: A list of (start_date, end_date) tuples representing smaller time chunks.
@@ -207,7 +209,5 @@ if __name__ == "__main__":
     end_year = 2025
     min_votes = 0    
 
-
     session = requests.Session()
-    save_movies_parallel(start_year, end_year, min_vote, min_votes)
-    
+    save_movies_parallel(start_year, end_year, min_votes)
