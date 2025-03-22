@@ -56,6 +56,6 @@ def import_tags():
 
 
 if __name__ == '__main__':
-	# import_links()
-	# import_ratings()
+	import_links()
+	import_ratings()
 	import_tags()

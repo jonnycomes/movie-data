@@ -1,11 +1,9 @@
 import sqlite3
 import requests
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime
 import calendar
-
+from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from config.settings import DB_PATH, TMDB_API_KEY, TMDB_BASE_URL, TMDB_REQUEST_PAGE_LIMIT
-
 
 
 def fetch_movies(start_date, end_date, page, min_votes):
@@ -31,6 +29,28 @@ def fetch_movies(start_date, end_date, page, min_votes):
     }
     response = requests.get(f"{TMDB_BASE_URL}/discover/movie", params=params)
     return response.json() if response.status_code == 200 else None
+
+
+def fetch_movie_details(movie_id):
+    """
+    Fetches detailed movie information.
+
+    Args:
+        movie_id (int): The TMDb movie ID.
+
+    Returns:
+        dict: JSON response with movie details, or None if the request fails.
+    """
+    params = {"api_key": TMDB_API_KEY}
+    url = f"{TMDB_BASE_URL}/movie/{movie_id}"
+
+    try:
+        response = session.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed: {e}")
+        return None
 
 
 def split_date_range(start_date, end_date, min_votes):
@@ -60,29 +80,6 @@ def split_date_range(start_date, end_date, min_votes):
             date_ranges.append((mid_date, end))
         else:
             yield (start, end)  # Only return valid, small-enough ranges
-
-
-def fetch_movie_details(movie_id):
-    """
-    Fetches detailed movie information.
-
-    Args:
-        movie_id (int): The TMDb movie ID.
-
-    Returns:
-        dict: JSON response with movie details, or None if the request fails.
-    """
-    params = {"api_key": TMDB_API_KEY}
-    url = f"{TMDB_BASE_URL}/movie/{movie_id}"
-
-    try:
-        response = session.get(url, params=params, timeout=10)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        print(f"Request failed: {e}")
-        return None
-
 
 
 def process_movies_parallel(start_date, end_date, min_votes):
@@ -203,11 +200,124 @@ def save_movies_parallel(start_year, end_year, min_votes):
     conn.close()
     print("Movie data insertion complete.")
 
-if __name__ == "__main__":
 
-    start_year = 2025  
+
+def save_movie(tmdb_id):
+    """Fetches movie details from TMDb and saves all relevant data to the database."""
+    
+    # Fetch data from TMDb API
+    url = f"{TMDB_BASE_URL}/movie/{tmdb_id}?api_key={TMDB_API_KEY}&append_to_response=credits"
+    response = requests.get(url)
+    
+    if response.status_code != 200:
+        print(f"Error fetching data for TMDB ID {tmdb_id}")
+        return
+    
+    data = response.json()
+
+    # Extract movie details
+    movie_id = data["id"]
+    title = data.get("title")
+    release_date = data.get("release_date")
+    budget = data.get("budget", 0)
+    revenue = data.get("revenue", 0)
+    runtime = data.get("runtime")
+    vote_average = data.get("vote_average", 0.0)
+    vote_count = data.get("vote_count", 0)
+    popularity = data.get("popularity", 0.0)
+
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+
+        # Insert into movie table
+        cursor.execute("""
+            INSERT INTO movie (movie_id, title, release_date, budget, revenue, runtime, vote_average, vote_count, popularity)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(movie_id) DO NOTHING;
+        """, (movie_id, title, release_date, budget, revenue, runtime, vote_average, vote_count, popularity))
+
+        # Insert genres into genre and movie_genre tables
+        for genre in data.get("genres", []):
+            genre_id = genre["id"]
+            genre_name = genre["name"]
+
+            cursor.execute("""
+                INSERT INTO genre (genre_id, name)
+                VALUES (?, ?)
+                ON CONFLICT(genre_id) DO NOTHING;
+            """, (genre_id, genre_name))
+
+            cursor.execute("""
+                INSERT INTO movie_genre (movie_id, genre_id)
+                VALUES (?, ?)
+                ON CONFLICT(movie_id, genre_id) DO NOTHING;
+            """, (movie_id, genre_id))
+
+        # Insert production companies
+        for company in data.get("production_companies", []):
+            company_id = company["id"]
+            company_name = company["name"]
+
+            cursor.execute("""
+                INSERT INTO production_company (company_id, name)
+                VALUES (?, ?)
+                ON CONFLICT(company_id) DO NOTHING;
+            """, (company_id, company_name))
+
+            cursor.execute("""
+                INSERT INTO movie_production_company (movie_id, company_id)
+                VALUES (?, ?)
+                ON CONFLICT(movie_id, company_id) DO NOTHING;
+            """, (movie_id, company_id))
+
+        # Insert cast members
+        credits = data.get("credits", {})
+        for cast in credits.get("cast", []):
+            person_id = cast["id"]
+            name = cast["name"]
+            character = cast.get("character", "")
+            cast_order = cast["order"]
+
+            cursor.execute("""
+                INSERT INTO person (person_id, name)
+                VALUES (?, ?)
+                ON CONFLICT(person_id) DO NOTHING;
+            """, (person_id, name))
+
+            cursor.execute("""
+                INSERT INTO movie_cast (movie_id, person_id, character, cast_order)
+                VALUES (?, ?, ?, ?)
+                ON CONFLICT(movie_id, person_id) DO NOTHING;
+            """, (movie_id, person_id, character, cast_order))
+
+        # Insert crew members
+        for crew in credits.get("crew", []):
+            person_id = crew["id"]
+            name = crew["name"]
+            job = crew["job"]
+            department = crew["department"]
+
+            cursor.execute("""
+                INSERT INTO person (person_id, name)
+                VALUES (?, ?)
+                ON CONFLICT(person_id) DO NOTHING;
+            """, (person_id, name))
+
+            cursor.execute("""
+                INSERT INTO movie_crew (movie_id, person_id, job, department)
+                VALUES (?, ?, ?, ?)
+                ON CONFLICT(movie_id, person_id, job) DO NOTHING;
+            """, (movie_id, person_id, job, department))
+
+
+
+if __name__ == "__main__":
+    session = requests.Session()
+
+    start_year = 2003  
     end_year = 2025
     min_votes = 0    
 
-    session = requests.Session()
     save_movies_parallel(start_year, end_year, min_votes)
+
+    # print(fetch_movie_details(139405))
