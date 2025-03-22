@@ -83,6 +83,16 @@ CREATE TABLE IF NOT EXISTS user_movie_rating (
     FOREIGN KEY (movielens_id) REFERENCES movie_link(movielens_id)   
 );
 
+CREATE TABLE IF NOT EXISTS user_movie_tag (
+    tag_id INTEGER,
+    user_id INTEGER NOT NULL,
+    movielens_id INTEGER NOT NULL,
+    tag TEXT NOT NULL,
+    timestamp INTEGER,
+    PRIMARY KEY (tag_id)
+    FOREIGN KEY (movielens_id) REFERENCES movie_link(movielens_id)   
+);
+
 CREATE TABLE IF NOT EXISTS movie_link (
     movielens_id INTEGER,
     tmdb_id INTEGER,

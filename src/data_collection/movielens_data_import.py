@@ -41,7 +41,21 @@ def import_ratings():
 				VALUES (?, ?, ?, ?)
 				""", reader)
 
+def import_tags():
+	with sqlite3.connect(DB_PATH) as conn:
+		cursor = conn.cursor()
+
+		# Read csv and insert into the db:
+		with open(RAW_DATA_PATH / 'tags.csv', 'r') as f:
+		    reader = csv.reader(f)
+		    next(reader)  # Skip header row
+		    cursor.executemany("""
+				INSERT INTO user_movie_tag (user_id, movielens_id, tag, timestamp) 
+				VALUES (?, ?, ?, ?)
+				""", reader)
+
 
 if __name__ == '__main__':
-	import_links()
-	import_ratings()
+	# import_links()
+	# import_ratings()
+	import_tags()
