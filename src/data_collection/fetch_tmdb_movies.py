@@ -210,7 +210,7 @@ def save_movie(tmdb_id):
     response = requests.get(url)
     
     if response.status_code != 200:
-        print(f"Error fetching data for TMDB ID {tmdb_id}")
+        print(f"Error fetching data for TMDB ID {tmdb_id}, response: {response}")
         return
     
     data = response.json()
@@ -311,13 +311,34 @@ def save_movie(tmdb_id):
 
 
 
+def fetch_missing_link_tmdb_ids():
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+
+        result = cursor.execute("""
+            SELECT tmdb_id 
+            FROM movie_link
+            WHERE tmdb_id NOT IN (
+                SELECT movie_id FROM movie
+                )
+            ;""")
+
+        return [row[0] for row in result.fetchall()]
+
+
+
 if __name__ == "__main__":
     session = requests.Session()
 
-    start_year = 2003  
-    end_year = 2025
-    min_votes = 0    
+    # start_year = 1950  
+    # end_year = 1969
+    # min_votes = 0  
 
-    save_movies_parallel(start_year, end_year, min_votes)
+    # save_movies_parallel(start_year, end_year, min_votes)
 
-    # print(fetch_movie_details(139405))
+
+    # for y in range(1900, 1880, -1):
+    #     save_movies_parallel(y, y, 0)
+
+    for tmdb_id in fetch_missing_link_tmdb_ids():
+        save_movie(tmdb_id)
