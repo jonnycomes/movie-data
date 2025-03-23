@@ -87,6 +87,25 @@ def fetch_scores(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_
         # Fetch and return the results into a pandas DataFrame
         return pd.DataFrame(cursor.fetchall(), columns=["movie_id", "director_score", "writer_score", "cast_score", "production_company_score"])
 
+def fetch_scores_by_tmdb(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order):
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+    
+        # Read the SQL query from the file generate_scores.sql
+        with open(SQL_PATH / 'generate_scores_by_tmdb.sql', 'r') as f:
+            query = f.read()
+        
+        # Execute the query with the passed parameters
+        cursor.execute(query, (lambda_director, lambda_director, 
+                               lambda_writers, lambda_writers, 
+                               lambda_cast_time, lambda_cast_order,
+                               lambda_cast_time, lambda_cast_order,
+                               lambda_cast_time, lambda_cast_order
+                               ))
+        
+        # Fetch and return the results into a pandas DataFrame
+        return pd.DataFrame(cursor.fetchall(), columns=["movie_id", "director_score", "writer_score", "cast_score", "production_company_score"])
+
 
 if __name__ == '__main__':
     fetch_scores(1,1,1,1)
