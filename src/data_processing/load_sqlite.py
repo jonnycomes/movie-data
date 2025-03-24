@@ -113,7 +113,8 @@ def fetch_predict_success_data(lambda_director, lambda_writers, lambda_cast_time
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
         query = """
-            SELECT movie_id, vote_average, runtime, num_cast_members, release_date
+            SELECT *
+            -- movie_id, vote_average, runtime, num_cast_members, release_date
             FROM movie_rating_features;
             """
         df = pd.read_sql_query(query, conn)
