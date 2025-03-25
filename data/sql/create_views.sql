@@ -8,6 +8,22 @@ CREATE VIEW movie_rating_features AS
         m.title,
         m.release_date,
         m.runtime,
+
+        -- top cast member by billing order
+        (SELECT GROUP_CONCAT(person_id) 
+         FROM (SELECT mc.person_id 
+               FROM movie_cast AS mc 
+               WHERE mc.movie_id = m.movie_id 
+               ORDER BY mc.cast_order ASC 
+               LIMIT 1)) AS top_cast_id,
+
+        -- top 2 cast members by billing order
+        (SELECT GROUP_CONCAT(person_id) 
+         FROM (SELECT mc.person_id 
+               FROM movie_cast AS mc 
+               WHERE mc.movie_id = m.movie_id 
+               ORDER BY mc.cast_order ASC 
+               LIMIT 2)) AS top_2_cast_ids,
         
         -- top 5 cast members by billing order
         (SELECT GROUP_CONCAT(person_id) 
