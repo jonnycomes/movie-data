@@ -44,7 +44,7 @@ def fetch_one_hot_genres(vote_count_min=0):
             return pd.DataFrame(columns=["movie_id"])
 
         # Dynamically generate the SQL query
-        case_statements = [f"MAX(CASE WHEN gp.genre_name = ? THEN 1 ELSE 0 END) AS `{genre}`" for genre in genres]
+        case_statements = [f"MAX(CASE WHEN gp.genre_name = ? THEN 1 ELSE 0 END) AS `genre_{genre}`" for genre in genres]
 
         query = f"""
         WITH GenrePivot AS (
@@ -140,6 +140,18 @@ def fetch_movie_rating_features():
         cursor = conn.cursor()
         query = """SELECT * FROM movie_rating_features;"""
         return pd.read_sql_query(query, conn)
+
+def fetch_movies(add_one_hot_genres=False):
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        query = """SELECT * FROM movie;"""
+        df = pd.read_sql_query(query, conn)
+
+    df['release_date'] = pd.to_datetime(df['release_date'])
+    if add_one_hot_genres:
+        df = pd.merge(df, fetch_one_hot_genres(), on='movie_id')
+
+    return df
 
 
 if __name__ == '__main__':
