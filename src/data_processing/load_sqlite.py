@@ -153,6 +153,14 @@ def fetch_movies(add_one_hot_genres=False):
 
     return df
 
+def fetch_user_movie_ratings():
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        query = "SELECT * FROM user_movie_rating"
+        return pd.read_sql_query(query, conn)
+
+
+
 
 if __name__ == '__main__':
     fetch_scores(1,1,1,1)
