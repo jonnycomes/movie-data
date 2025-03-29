@@ -5,7 +5,7 @@ from config.settings import DB_PATH, DATA_PROCESSING_SQL_PATH as SQL_PATH
 
 def fetch_one_hot_genres(vote_count_min=0):
     """
-    Fetches a one-hot encoded DataFrame for movie genres from an SQLite database.
+    Fetches a one-hot encoded DataFrame for movie genres.
 
     Each row represents a movie, with columns indicating whether a movie belongs to a particular genre (1 for yes, 0 for no).  
     The function dynamically adjusts to all genres present in the database.
@@ -21,11 +21,6 @@ def fetch_one_hot_genres(vote_count_min=0):
         A DataFrame where:
         - The first column is `movie_id`.
         - Subsequent columns are genre names, each containing 1 (if the movie has that genre) or 0 (otherwise).
-    
-    Example:
-    --------
-    >>> df = fetch_one_hot_genres()
-    >>> print(df.head())
 
     Notes:
     ------
@@ -153,14 +148,44 @@ def fetch_movies(add_one_hot_genres=False):
 
     return df
 
-def fetch_user_movie_ratings():
+def fetch_user_movie_ratings(tmdb_only=False):
+    if tmdb_only:
+        query = """
+                SELECT ml.tmdb_id AS movie_id, umr.user_id, umr.rating, umr.timestamp
+                FROM user_movie_rating umr 
+                JOIN movie_link ml ON ml.movielens_id = umr.movielens_id
+                WHERE ml.tmdb_id IS NOT NULL
+                """
+    else:
+        query = "SELECT * FROM user_movie_rating"
+
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
-        query = "SELECT * FROM user_movie_rating"
         return pd.read_sql_query(query, conn)
 
 
+def fetch_tmdb_to_movielens_id_map():
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        query = """
+                SELECT tmdb_id, movielens_id 
+                FROM movie_link
+                WHERE tmdb_id IS NOT NULL
+                """
+        return pd.read_sql_query(query, conn)
 
+def fetch_movie_title(movie_id, include_release_year=True):
+    if include_release_year:
+        query = f"""
+                SELECT title || ' (' || strftime('%Y', release_date) ||')' 
+                FROM movie WHERE movie_id={movie_id}
+                """
+    else:
+        query = f"SELECT title FROM movie WHERE movie_id={movie_id}"
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute(query)
+        return cursor.fetchone()[0]  
 
 if __name__ == '__main__':
-    fetch_scores(1,1,1,1)
+    print(fetch_movie_title(603, True))

@@ -11,6 +11,7 @@ setup(
         'matplotlib', 
         'scikit-learn', 
         'numpy',  
+        'lightfm', 
     ],
     classifiers=[
         'Programming Language :: Python :: 3',
