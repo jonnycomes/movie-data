@@ -1,5 +1,7 @@
 .ipynb_checkpoints/
 .DS_Store
 __pycache__
+
+# Ignoring large files:
 data/raw/ratings.csv
 data/movies.db
