@@ -125,19 +125,33 @@ def process_movies_parallel(start_date, end_date, min_votes):
     return movie_details_list
 
 
-def save_movies_parallel(start_year, end_year, min_votes):
+def save_movies_parallel(start_year, end_year, min_votes, reverse=False):
     """
     Orchestrates fetching and storing movie data in parallel.
-
-    Fetches movies from TMDb, retrieves details in parallel, and inserts data into SQLite DB.
+    
+    Args:
+        start_year (int): The starting year for fetching data.
+        end_year (int): The ending year for fetching data.
+        min_votes (int): Minimum number of votes to include a movie.
+        reverse (bool): If True, fetch data in reverse chronological order.
     """
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    for year in range(start_year, end_year + 1):
-        with ThreadPoolExecutor(max_workers=5) as executor:  # Parallelize across months
+    year_range = range(start_year, end_year + 1)
+    if reverse:
+        year_range = reversed(year_range)
+
+    for year in year_range:
+        print(f"Processing year: {year}")
+        with ThreadPoolExecutor(max_workers=5) as executor:
             future_to_month = {
-                executor.submit(process_movies_parallel, f"{year}-{month:02d}-01", f"{year}-{month:02d}-{calendar.monthrange(year, month)[1]}", min_votes)
+                executor.submit(
+                    process_movies_parallel,
+                    f"{year}-{month:02d}-01",
+                    f"{year}-{month:02d}-{calendar.monthrange(year, month)[1]}",
+                    min_votes
+                )
                 for month in range(1, 13)
             }
 
@@ -326,19 +340,35 @@ def fetch_missing_link_tmdb_ids():
         return [row[0] for row in result.fetchall()]
 
 
+def ingest_all_tmdb_movies():
+    """
+    Initializes the database with movie data from TMDb,
+    starting from the current year and working backwards
+    to the year of the first known movie (e.g., 1874).
+    """
+    CURRENT_YEAR = datetime.now().year
+    EARLIEST_YEAR = 1874
+    MIN_VOTES = 0
+
+    print(f"Starting data fetch from {CURRENT_YEAR} back to {EARLIEST_YEAR}...")
+    save_movies_parallel(
+        start_year=EARLIEST_YEAR,
+        end_year=CURRENT_YEAR,
+        min_votes=MIN_VOTES,
+        reverse=True
+    )
 
 if __name__ == "__main__":
     session = requests.Session()
 
+    ingest_all_tmdb_movies()
+
+    ## For adding specific movie data:
+    
     # start_year = 1950  
     # end_year = 1969
     # min_votes = 0  
-
     # save_movies_parallel(start_year, end_year, min_votes)
 
-
-    # for y in range(1900, 1880, -1):
-    #     save_movies_parallel(y, y, 0)
-
-    for tmdb_id in fetch_missing_link_tmdb_ids():
-        save_movie(tmdb_id)
+    # for tmdb_id in fetch_missing_link_tmdb_ids():
+    #     save_movie(tmdb_id)
