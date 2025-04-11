@@ -130,10 +130,13 @@ def fetch_predict_success_data(lambda_director, lambda_writers, lambda_cast_time
 
     return df
 
-def fetch_movie_rating_features():
+def fetch_movie_rating_features(min_votes=30):
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
-        query = """SELECT * FROM movie_rating_features;"""
+        query = f"""
+                SELECT * FROM movie_rating_features
+                WHERE vote_count >= {min_votes}
+                ;"""
         return pd.read_sql_query(query, conn)
 
 def fetch_movies(add_one_hot_genres=False):
@@ -182,6 +185,7 @@ def fetch_movie_title(movie_id, include_release_year=True):
                 """
     else:
         query = f"SELECT title FROM movie WHERE movie_id={movie_id}"
+
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
         cursor.execute(query)

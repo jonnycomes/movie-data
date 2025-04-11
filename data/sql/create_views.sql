@@ -8,6 +8,7 @@ CREATE VIEW movie_rating_features AS
         m.title,
         m.release_date,
         m.runtime,
+        m.vote_count,
 
         -- top cast member by billing order
         (SELECT GROUP_CONCAT(person_id) 
@@ -58,8 +59,7 @@ CREATE VIEW movie_rating_features AS
          FROM movie_genre AS mg 
          WHERE mg.movie_id = m.movie_id) AS genre_ids
         
-    FROM movie AS m
-    WHERE m.vote_count >= 30;
+    FROM movie AS m;
 
 
 CREATE VIEW movie_scores AS 
