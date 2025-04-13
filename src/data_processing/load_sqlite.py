@@ -82,7 +82,7 @@ def fetch_scores(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_
         # Fetch and return the results into a pandas DataFrame
         return pd.DataFrame(cursor.fetchall(), columns=["movie_id", "director_score", "writer_score", "cast_score", "production_company_score"])
 
-def fetch_scores_by_tmdb(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order):
+def fetch_scores_by_tmdb(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order, min_votes=30):
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
     
@@ -95,15 +95,14 @@ def fetch_scores_by_tmdb(lambda_director, lambda_writers, lambda_cast_time, lamb
                                lambda_writers, lambda_writers, 
                                lambda_cast_time, lambda_cast_order,
                                lambda_cast_time, lambda_cast_order,
-                               lambda_cast_time, lambda_cast_order
+                               lambda_cast_time, lambda_cast_order,
+                               min_votes
                                ))
         
         # Fetch and return the results into a pandas DataFrame
         return pd.DataFrame(cursor.fetchall(), columns=["movie_id", "director_score", "writer_score", "cast_score", "production_company_score"])
 
-def fetch_predict_success_data(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order):
-    threshold = 7.0
-
+def fetch_predict_success_data(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order, min_votes=30):
     # Get initial numeric features
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
@@ -114,19 +113,13 @@ def fetch_predict_success_data(lambda_director, lambda_writers, lambda_cast_time
             """
         df = pd.read_sql_query(query, conn)
 
-    # Convert release_date to numeric
-    df['release_date'] = pd.to_datetime(df['release_date'])
-    df['release_date'] = df['release_date'].astype(int) / 10**9  # Unix timestamp in seconds
-
     # Add genres
-    df_genre = fetch_one_hot_genres(vote_count_min=30)
+    df_genre = fetch_one_hot_genres(vote_count_min=min_votes)
     df = pd.merge(df, df_genre, on='movie_id')
 
     # Add scores (only using tmdb data)
-    df_scores = fetch_scores_by_tmdb(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order)
+    df_scores = fetch_scores_by_tmdb(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order, min_votes)
     df = pd.merge(df, df_scores, on='movie_id')
-
-    df["successful"] = (df["vote_average"] > threshold).astype(int) 
 
     return df
 

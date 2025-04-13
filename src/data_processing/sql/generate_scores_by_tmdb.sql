@@ -102,4 +102,4 @@ FROM OverallAverage, movie m
      LEFT JOIN WriterScores ws ON m.movie_id = ws.movie_id
      LEFT JOIN CastScores cs ON m.movie_id = cs.movie_id
      LEFT JOIN ProductionCompanyScores pcs ON m.movie_id = pcs.movie_id
-WHERE m.vote_count >= 30;
+WHERE m.vote_count >= ?;
