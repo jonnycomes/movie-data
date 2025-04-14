@@ -5,3 +5,7 @@ __pycache__
 # Ignoring large files:
 data/raw/ratings.csv
 data/movies.db
+
+# Ignoring archived material:
+**/_archive/
+
