@@ -6,6 +6,7 @@ __pycache__
 data/raw/ratings.csv
 data/movies.db
 
-# Ignoring archived material:
+# Ignoring archived and in progress material:
 **/_archive/
+**/_in_progress/
 
