@@ -63,31 +63,12 @@ def fetch_one_hot_genres(vote_count_min=0):
 
 
 
-def fetch_scores(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order):
+def fetch_scores(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order, min_votes=30):
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
     
         # Read the SQL query from the file generate_scores.sql
         with open(SQL_PATH / 'generate_scores.sql', 'r') as f:
-            query = f.read()
-        
-        # Execute the query with the passed parameters
-        cursor.execute(query, (lambda_director, lambda_director, 
-                               lambda_writers, lambda_writers, 
-                               lambda_cast_time, lambda_cast_order,
-                               lambda_cast_time, lambda_cast_order,
-                               lambda_cast_time, lambda_cast_order
-                               ))
-        
-        # Fetch and return the results into a pandas DataFrame
-        return pd.DataFrame(cursor.fetchall(), columns=["movie_id", "director_score", "writer_score", "cast_score", "production_company_score"])
-
-def fetch_scores_by_tmdb(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order, min_votes=30):
-    with sqlite3.connect(DB_PATH) as conn:
-        cursor = conn.cursor()
-    
-        # Read the SQL query from the file generate_scores.sql
-        with open(SQL_PATH / 'generate_scores_by_tmdb.sql', 'r') as f:
             query = f.read()
         
         # Execute the query with the passed parameters
@@ -118,7 +99,7 @@ def fetch_predict_success_data(lambda_director, lambda_writers, lambda_cast_time
     df = pd.merge(df, df_genre, on='movie_id')
 
     # Add scores (only using tmdb data)
-    df_scores = fetch_scores_by_tmdb(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order, min_votes)
+    df_scores = fetch_scores(lambda_director, lambda_writers, lambda_cast_time, lambda_cast_order, min_votes)
     df = pd.merge(df, df_scores, on='movie_id')
 
     return df
