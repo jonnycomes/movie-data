@@ -2,11 +2,14 @@
 .DS_Store
 __pycache__
 
-# Ignoring large files:
+# Large files:
 data/raw/ratings.csv
 data/movies.db
 
-# Ignoring archived and in progress material:
+# Archived and in progress material:
 **/_archive/
 **/_in_progress/
+
+# Secrets
+secret_settings.py
 
