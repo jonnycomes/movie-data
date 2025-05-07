@@ -13,4 +13,5 @@ data/movies.db
 
 # Secrets
 secret_settings.py
+replacements.txt
 
