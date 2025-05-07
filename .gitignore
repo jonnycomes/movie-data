@@ -1,6 +1,7 @@
 .ipynb_checkpoints/
 .DS_Store
 __pycache__
+.venv
 
 # Large files:
 data/raw/ratings.csv
