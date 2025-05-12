@@ -1,5 +1,5 @@
 from pathlib import Path
-from secret_settings import TMDB_API_KEY
+from config.secret_settings import TMDB_API_KEY
 
 # Define paths
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
