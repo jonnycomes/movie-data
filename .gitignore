@@ -3,9 +3,10 @@
 __pycache__
 .venv
 
-# Large files:
-data/raw/ratings.csv
-data/movies.db
+# Data files:
+*.csv
+*.db
+*.parquet
 
 # Archived and in progress material:
 **/_archive/
