@@ -6,6 +6,7 @@ __pycache__
 **/movie_project.egg-info/
 
 # Data files:
+data/
 *.csv
 *.db
 *.parquet
