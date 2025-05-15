@@ -1,7 +1,9 @@
+# Jupyter, macOS, Python, and packaging artifacts:
 .ipynb_checkpoints/
 .DS_Store
 __pycache__
 .venv
+**/movie_project.egg-info/
 
 # Data files:
 *.csv
@@ -15,4 +17,3 @@ __pycache__
 # Secrets
 secret_settings.py
 replacements.txt
-
