@@ -15,7 +15,7 @@ The dataset is designed to support a wide range of analyses and should be useful
 
 ## Project Highlights
 
-### [Predicting Movie Success](notebooks/successful_movie_prediction/main_models_and_predictions.ipynb)
+### [Predicting Movie Success](notebooks/successful_movie_prediction/main_models_and_predictions.html)
 
 This notebook builds models to predict which movies will be considered “successful” based on TMDb data.
 
@@ -31,7 +31,7 @@ What’s inside:
 
 ---
 
-### [Movie Rating Volume and the S&P 500: Signal or Coincidence](notebooks/rating_volume_and_market/rating_volume_vs_sp500.ipynb)
+### [Movie Rating Volume and the S&P 500: Signal or Coincidence](notebooks/rating_volume_and_market/rating_volume_vs_sp500.html)
 
 This notebook investigates the following question:
 Is there a strong negative correlation between MovieLens rating volume and the S&P 500?
