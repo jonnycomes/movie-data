@@ -12,6 +12,7 @@ setup(
         'scikit-learn',
         'numpy',
         'requests',
+        'pyarrow',
     ],
     extras_require={
         'recommender': ['lightfm'],
