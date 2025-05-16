@@ -35,9 +35,9 @@ response = urllib.request.urlopen(movielens_url)
 
 with zipfile.ZipFile(BytesIO(response.read())) as zip_file:
     for name in ["links.csv", "movies.csv", "ratings.csv", "tags.csv"]:
-        zip_file.extract(f"ml-latest-small/{name}", path=raw_dir)
-        (raw_dir / "ml-latest-small" / name).rename(raw_dir / name)
-    (raw_dir / "ml-latest-small").rmdir()
+        zip_file.extract(f"ml-25m/{name}", path=raw_dir)
+        (raw_dir / "ml-25m" / name).rename(raw_dir / name)
+    (raw_dir / "ml-25m").rmdir()
 
 print("Importing MovieLens data...")
 runpy.run_module("src.data_collection.import_movielens_data", run_name="__main__")
