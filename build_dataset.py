@@ -30,7 +30,7 @@ print("Downloading MovieLens data...")
 raw_dir = Path("data/raw")
 raw_dir.mkdir(parents=True, exist_ok=True)
 
-movielens_url = "https://files.grouplens.org/datasets/movielens/ml-latest-small.zip"
+movielens_url = "https://files.grouplens.org/datasets/movielens/ml-25m.zip"
 response = urllib.request.urlopen(movielens_url)
 
 with zipfile.ZipFile(BytesIO(response.read())) as zip_file:
