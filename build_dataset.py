@@ -21,9 +21,9 @@ else:
 
 # Create SQLite database schema
 print("Creating database schema...")
-subprocess.run(["sqlite3", "data/movies.db", ".read", "data/sql/create_tables.sql"])
-subprocess.run(["sqlite3", "data/movies.db", ".read", "data/sql/create_indexes.sql"])
-subprocess.run(["sqlite3", "data/movies.db", ".read", "data/sql/create_views.sql"])
+subprocess.run(["sqlite3", "data/movies.db", ".read data/sql/create_tables.sql"])
+subprocess.run(["sqlite3", "data/movies.db", ".read data/sql/create_indexes.sql"])
+subprocess.run(["sqlite3", "data/movies.db", ".read data/sql/create_views.sql"])
 
 # Download and import MovieLens data
 print("Downloading MovieLens data...")

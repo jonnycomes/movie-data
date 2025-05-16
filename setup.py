@@ -11,6 +11,7 @@ setup(
         'matplotlib',
         'scikit-learn',
         'numpy',
+        'requests',
     ],
     extras_require={
         'recommender': ['lightfm'],
