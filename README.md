@@ -89,3 +89,7 @@ This project uses data from the following sources:
 
 Please refer to each provider’s site for licensing and terms of use.
 
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
