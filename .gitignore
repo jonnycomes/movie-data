@@ -11,6 +11,9 @@ data/raw/
 *.db
 *.parquet
 
+# html exports of notebooks
+*.html
+
 # Archived and in progress material:
 **/_archive/
 **/_in_progress/
