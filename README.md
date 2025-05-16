@@ -29,8 +29,9 @@ What’s inside:
 
 **Main takeaway:** Adding context to the raw data—via historical performance scores—improves the model, especially in identifying strong candidates for success.
 
+---
 
-### [Movie Rating Volume and the S&P 500: Signal or Coincidence](notebooks/rating_volume_and_market/rating-volume-vs-sp500.ipynb)
+### [Movie Rating Volume and the S&P 500: Signal or Coincidence](notebooks/rating_volume_and_market/rating_volume_vs_sp500.ipynb)
 
 This notebook investigates the following question:
 Is there a strong negative correlation between MovieLens rating volume and the S&P 500?
