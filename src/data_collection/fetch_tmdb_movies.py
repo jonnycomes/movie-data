@@ -326,6 +326,14 @@ def save_movie(tmdb_id):
 
 
 def fetch_missing_link_tmdb_ids():
+    """
+    Return a list of TMDb IDs that appear in the 'movie_link' table 
+    but are missing from the 'movie' table.
+
+    This is used to identify movies that are referenced via links 
+    (e.g., from the MovieLens dataset) but have not yet been added 
+    to the main 'movie' table in the database.
+    """
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
 
