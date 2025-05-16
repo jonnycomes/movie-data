@@ -9039,10 +9039,10 @@ Proportion of movies predicted successful:  0.0122
 <h2 id="Going-Beyond-Frequency-Encoding:-Predicting-Movie-Success-with-Categorical-Scores">Going Beyond Frequency Encoding: Predicting Movie Success with Categorical Scores<a class="anchor-link" href="#Going-Beyond-Frequency-Encoding:-Predicting-Movie-Success-with-Categorical-Scores">¶</a></h2><p>In this section, we aim to improve on the random forest model developed earlier. Our previous approach relied on frequency encoding for categorical variables, which, while simple and effective in some cases, may fail to capture the full strength of the signal these features can carry.</p>
 <p>Take the example of directors: frequency encoding simply counts how many movies a director has made. However, this doesn’t necessarily reflect the quality of those movies. Some of the greatest directors may choose to make only a few films, while others with large filmographies might have produced mostly mediocre ones. To capture this nuance, we introduce a new encoding strategy that scores each director based on the vote averages of their previous movies, giving more weight to recent films.</p>
 <p>More precisely, we define a director score for a given movie as follows:</p>
-<p>$$\text{Director Score} = \frac{\sum\limits_{m} \text{vote\_ave}_m \cdot e^{-\lambda \cdot \text{days}_m} }{\sum\limits_{m} e^{-\lambda \cdot \text{days}_m}}$$</p>
+<p>$$\text{Director Score} = \frac{\sum\limits_{m} \mathrm{vote\_ave}_m \cdot e^{-\lambda \cdot \text{days}_m} }{\sum\limits_{m} e^{-\lambda \cdot \text{days}_m}}$$</p>
 <p>where the sums are taken over all prior movies $m$ by the same director and where:</p>
 <ul>
-<li>$\text{vote\_ave}_m$ is the vote average for the previous movie $m$.</li>
+<li>$\mathrm{vote\_ave}_m$ is the vote average for the previous movie $m$.</li>
 <li>$\text{days}_m$ is the number of days between the release of previous movie $m$ and the release of the current movie being scored.</li>
 <li>$\lambda$ is a decay parameter that controls how much recent movies are weighted more heavily than older ones.</li>
 </ul>
@@ -9050,8 +9050,8 @@ Proportion of movies predicted successful:  0.0122
 <p>In a separate Notebook (see <em>helper_feature_engineering_scores.ipynb</em>) various values for $\lambda$ were tested with the goal of optimizing the correlation between the resulting director score and the movie's vote average. We found an optimal value for $\lambda$ to be about
 $\lambda=0.0004$.</p>
 <p>We apply similar methods to other categorical features like the movie's cast and writers, replacing simple frequency counts with quality-weighted scores that better represent their past performance. We also compute a production company score as the average vote average of all prior films released by each company. This enriched encoding should give our model more predictive power and help it better identify potentially successful films. Here are the formulae we use for the Writers and Cast scores:</p>
-<p>$$\text{Writers Score} = \frac{\sum\limits_{m} \text{vote\_ave}_m \cdot e^{-\lambda \cdot \text{days}_m} }{\sum\limits_{m} e^{-\lambda \cdot \text{days}_m}}$$
-$$\text{Cast Score} = \frac{\sum\limits_{m} \text{vote\_ave}_m \cdot e^{-\lambda_t \cdot \text{days}_m-\lambda_o \cdot \text{cast\_order}_m} }{\sum\limits_{m}  e^{-\lambda_t \cdot \text{days}_m-\lambda_o \cdot \text{cast\_order}_m} }$$</p>
+<p>$$\text{Writers Score} = \frac{\sum\limits_{m} \mathrm{vote\_ave}_m \cdot e^{-\lambda \cdot \text{days}_m} }{\sum\limits_{m} e^{-\lambda \cdot \text{days}_m}}$$
+$$\text{Cast Score} = \frac{\sum\limits_{m} \mathrm{vote\_ave}_m \cdot e^{-\lambda_t \cdot \text{days}_m-\lambda_o \cdot \text{cast\_order}_m} }{\sum\limits_{m}  e^{-\lambda_t \cdot \text{days}_m-\lambda_o \cdot \text{cast\_order}_m} }$$</p>
 <p>In the following cell, we hardcode the optimal $\lambda$-parameters for each of the categorical features, as determined in the notebook <em>helper_feature_engineering_scores.ipynb</em>. If this leads to a stronger model, we could revisit the problem of selecting these parameters more systematically. For example, rather than hardcoding, we could use a technique like gradient descent to learn suitable values directly from the data.</p>
 </div>
 </div>
