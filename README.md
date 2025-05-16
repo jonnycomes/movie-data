@@ -15,39 +15,34 @@ The dataset is designed to support a wide range of analyses and should be useful
 
 ## Project Highlights
 
-### [Predicting Movie Success](https://jonnycomes.github.io/notebooks/main_models_and_predictions.html)
+### [Predicting Movie Success](https://jonnycomes.github.io/project_links/movie_data/main_models_and_predictions.html)
 
-This notebook builds models to predict which movies will be considered “successful” based on TMDb data.
+This notebook builds models to predict whether a movie will be considered “successful” based on TMDb data.
 
-The first model is a random forest using **frequency encoding** for categorical variables. We then improve the model by introducing **categorical scores**—numerical summaries of how often each director, actor, writer, and production company has been associated with well-rated movies.
+**What’s inside:**
+- **Baseline model**: Random forest using frequency encoding for categorical variables  
+  - Precision ~60%, very low recall  
+- **Improved model**: Adds **categorical scores** that reflect historical success of directors, actors, writers, and production companies  
+  - Precision improves to ~70%  
+- **Predictions**: Applies the model to recent releases  
+- **Interpretation**: Uses feature importance and partial dependence plots to identify key predictors of success
 
-What’s inside:
-- Feature importance plots and sample trees
-- Partial dependence plots to understand what the model is learning
-- Predictions on recent releases
-- Reflections on what patterns seem to matter most
-
-**Main takeaway:** Adding context to the raw data—via historical performance scores—improves the model, especially in identifying strong candidates for success.
+**Main takeaway:** Thoughtful feature engineering—especially contextual success scores—can substantially improve predictive performance.
 
 ---
 
-### [Movie Rating Volume and the S&P 500: Signal or Coincidence](https://jonnycomes.github.io/notebooks/rating_volume_vs_sp500.html)
+### [Movie Rating Volume and the S&P 500: Signal or Coincidence](https://jonnycomes.github.io/project_links/movie_data/rating_volume_vs_sp500.html)
 
-This notebook investigates the following question:
-Is there a strong negative correlation between MovieLens rating volume and the S&P 500?
+This notebook investigates the following question:  
+_Does a drop in the stock market lead to more people rating movies?_
 
-To explore this, we:
+**What’s inside:**
+- Found a strong negative correlation (-0.74) between the S&P 500 index and rating volume in the following month  
+- Explored how changing the forward-looking window affected the correlation, revealing signs that time trends might be driving the relationship  
+- Removed shared time trends and saw the correlation drop to -0.23  
 
-- Join timestamped movie ratings with historical market data
-
-- Compute 4-week rolling rating counts
-
-- Compare correlations before and after removing time trends
-
-**Conclusion:**
-The strong initial correlation (-0.74) turns out to be misleading. After detrending, it drops to -0.23, suggesting both series were changing over time—but not because one was driving the other.
-
-This is a good reminder to be cautious with correlations that might just reflect shared structure, like time.
+**Main takeaway:**  
+The initial correlation was misleading—both series were trending over time but not causally linked. Detrending revealed a much weaker relationship. This is a good reminder to be cautious with correlations that might just reflect shared structure, like time.
 
 ---
 
