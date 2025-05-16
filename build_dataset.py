@@ -1,9 +1,11 @@
 import os
 import subprocess
+import runpy
 import urllib.request
 import zipfile
 from io import BytesIO
 from pathlib import Path
+
 
 # Prompt user for TMDB API key and save to secret_settings.py
 TMDB_KEY_PATH = Path("src/config/secret_settings.py")
@@ -38,25 +40,17 @@ with zipfile.ZipFile(BytesIO(response.read())) as zip_file:
     (raw_dir / "ml-latest-small").rmdir()
 
 print("Importing MovieLens data...")
-from src.data_collection import import_movielens_data
-import_movielens_data.main()
+runpy.run_module("src.data_collection.import_movielens_data", run_name="__main__")
 
 # Import TMDb metadata
 print("Importing TMDb data...")
-from src.data_collection import fetch_tmdb_movies
-fetch_tmdb_movies.main()
+runpy.run_module("src.data_collection.fetch_tmdb_movies", run_name="__main__")
 
 # Generate processed data files
 Path("data/processed").mkdir(parents=True, exist_ok=True)
 print("Generating processed data...")
-from src.data_processing import (
-    daily_forward_4w_rating_volume_to_parquet,
-    daily_forward_multiweek_rating_volume_to_parquet,
-    one_hot_genres_to_parquet,
-)
-
-daily_forward_4w_rating_volume_to_parquet.main()
-daily_forward_multiweek_rating_volume_to_parquet.main()
-one_hot_genres_to_parquet.main()
+runpy.run_module("src.data_processing.daily_forward_4w_rating_volume_to_parquet", run_name="__main__")
+runpy.run_module("src.data_processing.daily_forward_multiweek_rating_volume_to_parquet", run_name="__main__")
+runpy.run_module("src.data_processing.one_hot_genres_to_parquet", run_name="__main__")
 
 print("Data setup complete.")
