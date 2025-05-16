@@ -1,10 +1,18 @@
 import sqlite3
 import requests
 import calendar
+import logging
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from config.settings import DB_PATH, TMDB_API_KEY, TMDB_BASE_URL, TMDB_REQUEST_PAGE_LIMIT
+from config.settings import DB_PATH, TMDB_API_KEY, TMDB_BASE_URL, TMDB_REQUEST_PAGE_LIMIT, LOG_PATH
 
+def configure_logging():
+    LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    logging.basicConfig(
+        filename=LOG_PATH,
+        level=logging.INFO,
+        format='%(asctime)s [%(levelname)s] %(message)s'
+    )
 
 def fetch_movies(start_date, end_date, page, min_votes):
     """
@@ -49,7 +57,7 @@ def fetch_movie_details(movie_id):
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
-        print(f"Request failed: {e}")
+        logging.error(f"Request failed: {e}")
         return None
 
 
@@ -224,7 +232,7 @@ def save_movie(tmdb_id):
     response = requests.get(url)
     
     if response.status_code != 200:
-        print(f"Error fetching data for TMDB ID {tmdb_id}, response: {response}")
+        logging.error(f"Error fetching data for TMDB ID {tmdb_id}, response: {response}")
         return
     
     data = response.json()
@@ -367,16 +375,6 @@ def ingest_all_tmdb_movies():
     )
 
 if __name__ == "__main__":
+    configure_logging()
     session = requests.Session()
-
     ingest_all_tmdb_movies()
-
-    ## For adding specific movie data:
-    
-    # start_year = 1950  
-    # end_year = 1969
-    # min_votes = 0  
-    # save_movies_parallel(start_year, end_year, min_votes)
-
-    # for tmdb_id in fetch_missing_link_tmdb_ids():
-    #     save_movie(tmdb_id)

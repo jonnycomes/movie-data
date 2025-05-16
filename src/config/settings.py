@@ -7,6 +7,7 @@ DB_PATH = PROJECT_ROOT / "data" / "movies.db"
 RAW_DATA_PATH = PROJECT_ROOT / "data" / "raw"
 PROCESSED_DATA_PATH = PROJECT_ROOT / "data" / "processed"
 DATA_PROCESSING_SQL_PATH = PROJECT_ROOT / "src" / "data_processing" / "sql"
+LOG_PATH = PROJECT_ROOT / "logs" / "tmdb_fetch.log"
 
 # TMDB API settings
 TMDB_BASE_URL = "https://api.themoviedb.org/3"
