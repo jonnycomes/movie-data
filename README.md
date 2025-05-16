@@ -15,7 +15,7 @@ The dataset is designed to support a wide range of analyses and should be useful
 
 ## Project Highlights
 
-### [Predicting Movie Success](https://jonnycomes.github.io/notebooks/successful_movie_prediction.html)
+### [Predicting Movie Success](https://jonnycomes.github.io/notebooks/main_models_and_predictions.html)
 
 This notebook builds models to predict which movies will be considered “successful” based on TMDb data.
 
