@@ -1,6 +1,6 @@
 # Movie Data: Modeling, Analysis, and Engineering with TMDb and MovieLens
 
-This project combines metadata from [TMDb (The Movie Database)](https://www.themoviedb.org/) with user ratings and tags from [MovieLens](https://grouplens.org/datasets/movielens/) to create a dataset for studying movies and building prediction models.
+This project combines metadata from [TMDb](https://www.themoviedb.org/) (The Movie Database) with user ratings and tags from [MovieLens](https://grouplens.org/datasets/movielens/) to create a dataset for studying movies and building prediction models.
 
 The repository includes:
 - A custom pipeline for collecting and processing the data
@@ -84,7 +84,7 @@ This project uses data from the following sources:
 
 - [MovieLens](https://grouplens.org/datasets/movielens/), a research project maintained by the GroupLens lab at the University of Minnesota. The dataset is available for non-commercial use and widely used for academic and educational purposes.
 
-- [TMDb (The Movie Database)](https://www.themoviedb.org/), accessed via the public TMDb API.  
+- [TMDb](https://www.themoviedb.org/) (The Movie Database), accessed via the public TMDb API.  
   This product uses the TMDb API but is **not endorsed or certified by TMDb**.
 
 Please refer to each provider’s site for licensing and terms of use.
