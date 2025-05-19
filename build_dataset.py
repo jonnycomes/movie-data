@@ -1,4 +1,3 @@
-import os
 import subprocess
 import runpy
 import urllib.request
