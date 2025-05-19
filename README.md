@@ -27,7 +27,7 @@ This notebook builds models to predict whether a movie will be considered “suc
 - **Predictions**: Applies the model to recent releases  
 - **Interpretation**: Uses feature importance and partial dependence plots to identify key predictors of success
 
-**Main takeaway:** Thoughtful feature engineering—especially contextual success scores—can substantially improve predictive performance.
+**Main takeaway:** Thoughtful feature engineering—especially contextual scores for categorical features—can substantially improve predictive performance.
 
 ---
 
@@ -42,7 +42,7 @@ _Does a drop in the stock market lead to more people rating movies?_
 - Removed shared time trends and saw the correlation drop to -0.23  
 
 **Main takeaway:**  
-The initial correlation was misleading—both series were trending over time but not causally linked. Detrending revealed a much weaker relationship. This is a good reminder to be cautious with correlations that might just reflect shared structure, like time.
+The initial correlation was misleading—both series were trending over time. Detrending revealed a much weaker relationship. This is a good reminder to be cautious with correlations that might just reflect shared structure, like time.
 
 ---
 
@@ -74,7 +74,7 @@ Once you’re ready, follow these steps:
    python build_dataset.py
    ```
 
-4. When prompted, enter your TMDB API key to fetch movie data from The Movie Database (TMDb).
+4. When prompted, enter your TMDB API key to fetch movie data from The Movie Database.
 
 ---
 
