@@ -15,7 +15,7 @@ The dataset is designed to support a wide range of analyses and should be useful
 
 ## Project Highlights
 
-### [Predicting Movie Success](https://jonnycomes.github.io/project_links/movie_data/main_models_and_predictions.html)
+### [Predicting Movie Success](https://jonnycomes.github.io/movie-data/main_models_and_predictions.html)
 
 This notebook builds models to predict whether a movie will be considered “successful” based on TMDb data.
 
@@ -31,7 +31,7 @@ This notebook builds models to predict whether a movie will be considered “suc
 
 ---
 
-### [Movie Rating Volume and the S&P 500: Signal or Coincidence](https://jonnycomes.github.io/project_links/movie_data/rating_volume_vs_sp500.html)
+### [Movie Rating Volume and the S&P 500: Signal or Coincidence](https://jonnycomes.github.io/movie-data/rating_volume_vs_sp500.html)
 
 This notebook investigates the following question:  
 _Does a drop in the stock market lead to more people rating movies?_
